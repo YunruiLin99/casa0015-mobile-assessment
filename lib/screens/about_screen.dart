@@ -11,7 +11,7 @@ class AboutScreen extends StatelessWidget {
     final cs = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('关于')),
+      appBar: AppBar(title: const Text('About')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
@@ -39,7 +39,7 @@ class AboutScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            '版本 1.0.0',
+            'Version 1.0.0',
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: cs.onSurfaceVariant,
@@ -47,17 +47,17 @@ class AboutScreen extends StatelessWidget {
           ),
           const SizedBox(height: 28),
           _SectionCard(
-            title: '功能介绍',
+            title: 'Features',
             child: Text(
-              'StudySync 帮助你快速了解当前环境是否适合学习：'
-              '结合环境光线与（演示）天气信息，给出简洁的学习建议，'
-              '并可将当前状态记录到本地以便回顾。',
+              'StudySync helps you quickly understand whether your current environment is suitable for studying: '
+              'By combining ambient light with (demo) weather information, it provides concise study recommendations, '
+              'and lets you save your current status locally for later review.',
               style: theme.textTheme.bodyLarge?.copyWith(height: 1.45),
             ),
           ),
           const SizedBox(height: 14),
           _SectionCard(
-            title: '作者',
+            title: 'Author',
             child: Text(
               'Yunrui Lin',
               style: theme.textTheme.titleMedium?.copyWith(

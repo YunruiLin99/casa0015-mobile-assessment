@@ -39,7 +39,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     await HistoryStorage.saveSnapshot(widget.snapshot);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('已保存当前状态')),
+      const SnackBar(content: Text('Saved current status')),
     );
     await _load();
   }
@@ -56,7 +56,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final cs = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('记录')),
+      appBar: AppBar(title: const Text('History')),
       body: Column(
         children: [
           Padding(
@@ -72,7 +72,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                 ),
                 child: Text(
-                  '📝 记录当前状态',
+                  '📝 Record current status',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -86,7 +86,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 : _records.isEmpty
                     ? Center(
                         child: Text(
-                          '暂无记录',
+                          'No records yet',
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: cs.onSurfaceVariant,
                           ),
@@ -123,7 +123,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               subtitle: Padding(
                                 padding: const EdgeInsets.only(top: 6),
                                 child: Text(
-                                  '状态：${r.lightStatus} · ${r.lux} lx',
+                                  'Status: ${r.lightStatus} · ${r.lux} lx',
                                   style: theme.textTheme.bodyMedium,
                                 ),
                               ),

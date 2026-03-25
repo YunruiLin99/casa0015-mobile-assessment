@@ -25,8 +25,8 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(find.text('光线状态'), findsOneWidget);
-    expect(find.text('首页'), findsOneWidget);
+    expect(find.text('Light'), findsOneWidget);
+    expect(find.text('Home'), findsOneWidget);
 
     // HomeScreen schedules a short fallback timer and may start HTTP; advance time.
     await tester.pump(const Duration(seconds: 3));

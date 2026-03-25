@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _lux = mock;
           _loading = false;
-          _sensorError = '当前平台无光线传感器，已使用模拟数值';
+          _sensorError = 'No light sensor available on this platform; using simulated values.';
         });
         _pushSnapshot();
       }
@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {
             _lux = 150;
             _loading = false;
-            _sensorError = '光线传感器不可用，已使用模拟数值';
+            _sensorError = 'Light sensor is unavailable; using simulated values.';
           });
           _pushSnapshot();
         },
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _lux = 150;
         _loading = false;
-        _sensorError = '无法读取光线，已使用模拟数值';
+        _sensorError = 'Unable to read light sensor; using simulated values.';
       });
       _pushSnapshot();
     }
@@ -128,21 +128,22 @@ class _HomeScreenState extends State<HomeScreen> {
   ({String label, String advice, Color accent}) _classify(int lux) {
     if (lux < 50) {
       return (
-        label: '暗',
-        advice: '光线偏暗，建议开灯或靠近窗户，减轻视疲劳。',
+        label: 'Dim',
+        advice: 'The light is too dim. Turn on a lamp or move closer to a window to reduce eye strain.',
         accent: AppColors.suggestionDark,
       );
     }
     if (lux < 400) {
       return (
-        label: '适中',
-        advice: '光线适中，当前环境较适合专注学习。',
+        label: 'Moderate',
+        advice: 'The light is comfortable. This environment is suitable for focused study.',
         accent: AppColors.suggestionOk,
       );
     }
     return (
-      label: '明亮',
-      advice: '环境明亮，注意屏幕反光，可适当调低屏幕亮度。',
+      label: 'Bright',
+      advice:
+          'The room is bright. Watch out for screen glare and consider lowering your screen brightness.',
       accent: AppColors.suggestionBright,
     );
   }
@@ -162,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('StudySync'),
         actions: [
           IconButton(
-            tooltip: '刷新',
+            tooltip: 'Refresh',
             onPressed: _loading ? null : _onRefresh,
             icon: _loading
                 ? SizedBox(
@@ -213,19 +214,19 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             _InfoCard(
               icon: Icons.wb_sunny_outlined,
-              title: '光线状态',
+              title: 'Light',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _loading ? '读取中…' : '$_lux lx',
+                    _loading ? 'Reading...' : '$_lux lx',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '状态：${classification.label}',
+                    'Status: ${classification.label}',
                     style: theme.textTheme.titleMedium,
                   ),
                 ],
@@ -234,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 14),
             _InfoCard(
               icon: Icons.cloud_outlined,
-              title: '天气',
+              title: 'Weather',
               child: Row(
                 children: [
                   Icon(Icons.wb_sunny_rounded, color: Colors.amber.shade700, size: 36),
@@ -248,9 +249,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text('晴天', style: theme.textTheme.titleMedium),
+                      Text('Sunny', style: theme.textTheme.titleMedium),
                       Text(
-                        '（演示数据）',
+                        '(Demo data)',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: cs.onSurfaceVariant,
                         ),
@@ -263,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 14),
             _InfoCard(
               icon: Icons.lightbulb_outline_rounded,
-              title: '学习建议',
+              title: 'Study Advice',
               backgroundColor: classification.accent.withValues(alpha: 0.12),
               borderColor: classification.accent.withValues(alpha: 0.35),
               child: Text(

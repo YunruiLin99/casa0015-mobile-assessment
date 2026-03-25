@@ -2,8 +2,8 @@
 class StudySnapshot {
   const StudySnapshot({
     this.lux = 0,
-    this.lightStatus = '未知',
-    this.suggestion = '请先在首页刷新以获取环境数据',
+    this.lightStatus = 'Unknown',
+    this.suggestion = 'Please refresh on the Home screen to get environment data.',
   });
 
   final int lux;

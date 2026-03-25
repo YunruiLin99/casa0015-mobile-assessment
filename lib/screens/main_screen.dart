@@ -36,17 +36,17 @@ class _MainScreenState extends State<MainScreen> {
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),
-            label: '首页',
+            label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Icons.history_outlined),
             selectedIcon: Icon(Icons.history_rounded),
-            label: '记录',
+            label: 'History',
           ),
           NavigationDestination(
             icon: Icon(Icons.info_outline_rounded),
             selectedIcon: Icon(Icons.info_rounded),
-            label: '关于',
+            label: 'About',
           ),
         ],
       ),
