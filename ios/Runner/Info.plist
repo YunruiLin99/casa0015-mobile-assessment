@@ -66,5 +66,19 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSMotionUsageDescription</key>
+	<string>StudySync uses motion and ambient sensors to determine whether your study environment is suitable.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>StudySync uses the camera feed to estimate ambient light for study recommendations.</string>
+	<key>NSSensorKitUsageDetail</key>
+	<dict>
+		<key>SRSensorUsageAmbientLightSensor</key>
+		<string>StudySync reads ambient light data to provide real-time study recommendations.</string>
+	</dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

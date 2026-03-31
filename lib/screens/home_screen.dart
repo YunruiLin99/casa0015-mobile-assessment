@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:light/light.dart';
 
 import '../models/study_snapshot.dart';
 import '../theme/app_colors.dart';
@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
       '652e2787d0f4daf31caef6a97655ac44';
   static const String _weatherCity = 'London';
 
-  static bool get _platformSupportsLight {
+  static bool get _platformSupportsLightReading {
     if (kIsWeb) return false;
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -37,7 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  StreamSubscription<int>? _luxSub;
+  CameraController? _cameraController;
+  DateTime _lastLightUpdate = DateTime.fromMillisecondsSinceEpoch(0);
   int _lux = 0;
   bool _loading = true;
   String? _sensorError;
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    unawaited(_luxSub?.cancel() ?? Future<void>.value());
+    unawaited(_disposeCamera());
     super.dispose();
   }
 
@@ -150,56 +151,160 @@ class _HomeScreenState extends State<HomeScreen> {
         .join(' ');
   }
 
+  Future<void> _disposeCamera() async {
+    final controller = _cameraController;
+    _cameraController = null;
+    if (controller == null) return;
+    try {
+      if (controller.value.isStreamingImages) {
+        await controller.stopImageStream();
+      }
+    } catch (_) {
+      // Ignore stream stop failures during dispose/refresh.
+    }
+    await controller.dispose();
+  }
+
+  int _estimateLuxFromImage(CameraImage image) {
+    if (image.planes.isEmpty) return _lux;
+
+    double brightness;
+    if (image.format.group == ImageFormatGroup.bgra8888) {
+      final bytes = image.planes.first.bytes;
+      if (bytes.length < 4) return _lux;
+      const pixelStride = 4;
+      const sampleStep = 16;
+      var sum = 0.0;
+      var count = 0;
+      for (var i = 0; i + 2 < bytes.length; i += pixelStride * sampleStep) {
+        final b = bytes[i].toDouble();
+        final g = bytes[i + 1].toDouble();
+        final r = bytes[i + 2].toDouble();
+        final luminance = (0.114 * b) + (0.587 * g) + (0.299 * r);
+        sum += luminance / 255.0;
+        count++;
+      }
+      brightness = count == 0 ? 0.0 : sum / count;
+    } else {
+      final bytes = image.planes.first.bytes;
+      if (bytes.isEmpty) return _lux;
+      const sampleStep = 16;
+      var sum = 0.0;
+      var count = 0;
+      for (var i = 0; i < bytes.length; i += sampleStep) {
+        sum += bytes[i] / 255.0;
+        count++;
+      }
+      brightness = count == 0 ? 0.0 : sum / count;
+    }
+
+    final scaled = (brightness * brightness * 1500).round();
+    return scaled.clamp(0, 2000);
+  }
+
+  void _onCameraFrame(CameraImage image) {
+    if (!mounted) return;
+    final now = DateTime.now();
+    if (now.difference(_lastLightUpdate) < const Duration(milliseconds: 350)) {
+      return;
+    }
+    _lastLightUpdate = now;
+
+    final lux = _estimateLuxFromImage(image);
+    setState(() {
+      _lux = lux;
+      _loading = false;
+      _sensorError = null;
+    });
+    _pushSnapshot();
+  }
+
   Future<void> _startSensor() async {
     setState(() {
       _loading = true;
       _sensorError = null;
     });
 
-    if (!_platformSupportsLight) {
+    if (!_platformSupportsLightReading) {
       const mock = 180;
       if (mounted) {
         setState(() {
           _lux = mock;
           _loading = false;
-          _sensorError = 'No light sensor available on this platform; using simulated values.';
+          _sensorError =
+              'Camera-based light detection is not supported; using simulated values.';
         });
         _pushSnapshot();
       }
       return;
     }
 
-    await _luxSub?.cancel();
-    _luxSub = null;
+    await _disposeCamera();
 
     try {
-      await Light().requestAuthorization();
-      _luxSub = Light().lightSensorStream.listen(
-        (lux) {
-          if (!mounted) return;
-          setState(() {
-            _lux = lux;
-            _loading = false;
-            _sensorError = null;
-          });
-          _pushSnapshot();
-        },
-        onError: (Object e) {
-          if (!mounted) return;
-          setState(() {
-            _lux = 150;
-            _loading = false;
-            _sensorError = 'Light sensor is unavailable; using simulated values.';
-          });
-          _pushSnapshot();
-        },
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        throw CameraException(
+          'CameraNotFound',
+          'No camera available for ambient light estimation.',
+        );
+      }
+      final selected = cameras.where((c) => c.lensDirection == CameraLensDirection.back).isNotEmpty
+          ? cameras.firstWhere((c) => c.lensDirection == CameraLensDirection.back)
+          : cameras.first;
+
+      final controller = CameraController(
+        selected,
+        ResolutionPreset.low,
+        enableAudio: false,
+        imageFormatGroup:
+            defaultTargetPlatform == TargetPlatform.iOS
+                ? ImageFormatGroup.bgra8888
+                : ImageFormatGroup.yuv420,
       );
+
+      await controller.initialize();
+      try {
+        await controller.setFlashMode(FlashMode.off);
+      } catch (_) {
+        // Some devices do not support toggling flash in stream mode.
+      }
+
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+
+      _cameraController = controller;
+      await controller.startImageStream(_onCameraFrame);
+
+      if (mounted && _loading) {
+        setState(() {
+          _loading = false;
+        });
+      }
+    } on CameraException catch (e) {
+      if (!mounted) return;
+      final denied =
+          e.code == 'CameraAccessDenied' ||
+          e.code == 'CameraAccessDeniedWithoutPrompt' ||
+          e.code == 'CameraAccessRestricted';
+      setState(() {
+        _lux = 150;
+        _loading = false;
+        _sensorError =
+            denied
+                ? 'Camera permission denied; using simulated values.'
+                : 'Camera light detection unavailable; using simulated values.';
+      });
+      _pushSnapshot();
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _lux = 150;
         _loading = false;
-        _sensorError = 'Unable to read light sensor; using simulated values.';
+        _sensorError =
+            'Unable to start camera-based light detection; using simulated values.';
       });
       _pushSnapshot();
     }
