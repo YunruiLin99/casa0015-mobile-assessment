@@ -44,6 +44,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
     await _load();
   }
 
+  Future<void> _deleteRecord(int index) async {
+    await HistoryStorage.deleteAt(index);
+    if (!mounted) return;
+    setState(() {
+      _records.removeAt(index);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Record deleted')),
+    );
+  }
+
   static String _pad2(int n) => n.toString().padLeft(2, '0');
 
   String _formatTime(DateTime t) {
@@ -114,6 +125,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 horizontal: 18,
                                 vertical: 8,
                               ),
+                              trailing: IconButton(
+                                tooltip: 'Delete',
+                                icon: Icon(
+                                  Icons.delete_outline_rounded,
+                                  color: cs.error,
+                                ),
+                                onPressed: () => _deleteRecord(index),
+                              ),
                               title: Text(
                                 _formatTime(r.time),
                                 style: theme.textTheme.titleSmall?.copyWith(
@@ -122,9 +141,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                               subtitle: Padding(
                                 padding: const EdgeInsets.only(top: 6),
-                                child: Text(
-                                  'Status: ${r.lightStatus} · ${r.lux} lx',
-                                  style: theme.textTheme.bodyMedium,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Light: ${r.lux} lx (${r.lightStatus})',
+                                      style: theme.textTheme.bodyMedium,
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Weather: ${r.weather}',
+                                      style: theme.textTheme.bodyMedium,
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Advice: ${r.suggestion}',
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        color: cs.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

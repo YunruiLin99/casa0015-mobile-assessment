@@ -9,18 +9,21 @@ class HistoryRecord {
     required this.time,
     required this.lux,
     required this.lightStatus,
+    required this.weather,
     required this.suggestion,
   });
 
   final DateTime time;
   final int lux;
   final String lightStatus;
+  final String weather;
   final String suggestion;
 
   Map<String, dynamic> toJson() => {
         'time': time.toIso8601String(),
         'lux': lux,
         'lightStatus': lightStatus,
+        'weather': weather,
         'suggestion': suggestion,
       };
 
@@ -29,6 +32,7 @@ class HistoryRecord {
       time: DateTime.parse(json['time'] as String),
       lux: json['lux'] as int,
       lightStatus: json['lightStatus'] as String,
+      weather: (json['weather'] as String?) ?? 'Weather unavailable',
       suggestion: json['suggestion'] as String,
     );
   }
@@ -59,9 +63,18 @@ class HistoryStorage {
       time: DateTime.now(),
       lux: snapshot.lux,
       lightStatus: snapshot.lightStatus,
+      weather: snapshot.weather,
       suggestion: snapshot.suggestion,
     );
     list.insert(0, jsonEncode(record.toJson()));
+    await prefs.setStringList(_historyKey, list);
+  }
+
+  static Future<void> deleteAt(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList(_historyKey) ?? [];
+    if (index < 0 || index >= list.length) return;
+    list.removeAt(index);
     await prefs.setStringList(_historyKey, list);
   }
 }

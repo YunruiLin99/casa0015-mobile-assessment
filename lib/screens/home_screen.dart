@@ -95,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _weatherTempC = null;
           _weatherDescription = null;
         });
+        _pushSnapshot();
         return;
       }
 
@@ -116,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _weatherTempC = null;
           _weatherDescription = null;
         });
+        _pushSnapshot();
         return;
       }
 
@@ -128,6 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _weatherTempC = temp;
         _weatherDescription = _titleCaseWords(rawDesc);
       });
+      _pushSnapshot();
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -137,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _weatherTempC = null;
         _weatherDescription = null;
       });
+      _pushSnapshot();
     }
   }
 
@@ -316,9 +320,20 @@ class _HomeScreenState extends State<HomeScreen> {
       StudySnapshot(
         lux: _lux,
         lightStatus: c.label,
+        weather: _currentWeatherSummary(),
         suggestion: c.advice,
       ),
     );
+  }
+
+  String _currentWeatherSummary() {
+    if (_weatherError != null) {
+      return 'Weather unavailable';
+    }
+    if (_weatherTempC == null || _weatherDescription == null) {
+      return 'Weather unavailable';
+    }
+    return '${_weatherTempC!.toStringAsFixed(1)}°C, $_weatherDescription';
   }
 
   ({String label, String advice, Color accent}) _classify(int lux) {
