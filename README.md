@@ -1,23 +1,69 @@
-# REPLACE WITH YOUR APP NAME
+# StudySync
 
-This is the Final assessment template for CASA0014 - Please use this template and edit the relevant sections to personalise.
-This section has a short introduction to what the application is
+StudySync is a Flutter mobile app that helps users quickly evaluate whether their current environment is suitable for focused studying.
 
-## Use this README File 
+## Problem Statement
 
-Use this section to show us what your Mobile App is about.   Include a Screenshot to the App, link to the various frameworks you've used. Include your presentation video here that shows off your Mobile App.   Emojis are also fun to include 📱 😄
+Students often study in environments that are too dark, distracting, or otherwise suboptimal without realizing it.  
+StudySync helps students determine if their environment is suitable for studying by combining ambient-light estimation and live weather context, then providing practical study advice.
 
-Look at some other Flutter Apps online and see how they use there README File.  Good examples are:
+## Key Features
 
-- https://github.com/miickel/flutter_particle_clock
-- https://github.com/Tarikul711/flutter-food-delivery-app-ui    
-- https://github.com/mohak1283/Instagram-Clone
+- **Camera-based light detection**  
+  Uses the device camera stream to estimate ambient brightness and convert it to approximate lux values in real time.
 
+- **Real-time weather data**  
+  Fetches live weather information from the OpenWeatherMap API (default city: London).
 
-## Include A Section That Tells Developers How To Install The App
+- **Smart study advice**  
+  Generates study recommendations dynamically based on current light conditions.
 
-Include a section that gives intructions on how to install the app or run it in Flutter.  What versions of the plugins are you assuming?  Maybe define a licence
+- **History recording**  
+  Saves timestamp, light value, weather info, and advice to local storage (`SharedPreferences`) for later review.
 
-##  Contact Details
+## Screenshots
 
-Having Contact Details is also good as it shows people how to get in contact with you if they'd like to contribute to the app. 
+> Placeholder: add screenshots here.
+
+- Home Screen: `![Home](./screenshots/home.png)`
+- History Screen: `![History](./screenshots/history.png)`
+- About Screen: `![About](./screenshots/about.png)`
+
+## How to Run the App
+
+### 1) Prerequisites
+
+- Flutter SDK installed (latest stable recommended)
+- Xcode (for iOS) / Android Studio (for Android)
+- A physical device or simulator/emulator
+
+### 2) Install dependencies
+
+```bash
+flutter pub get
+```
+
+### 3) Run the app
+
+```bash
+flutter run
+```
+
+### 4) iOS notes
+
+- Open `ios/Runner.xcworkspace` in Xcode if you need signing/capability setup.
+- Ensure camera permission is granted on device for light estimation.
+
+## Dependencies Used
+
+Main dependencies in `pubspec.yaml`:
+
+- `http` - for OpenWeatherMap API requests
+- `camera` - for camera-based ambient light estimation
+- `shared_preferences` - for local history persistence
+- `cupertino_icons` - iOS style icons
+
+## Author
+
+**Yunrui Lin**  
+UCL CASA0015
