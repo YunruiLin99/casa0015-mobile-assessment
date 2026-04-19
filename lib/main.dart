@@ -51,7 +51,10 @@ class StudySyncApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const SplashScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+      },
     );
   }
 }
