@@ -23,11 +23,14 @@ StudySync helps students determine if their environment is suitable for studying
 
 ## Screenshots
 
-> Placeholder: add screenshots here.
+### Home Screen
+![Home Screen](screenshots/home.png)
 
-- Home Screen: `![Home](./screenshots/home.png)`
-- History Screen: `![History](./screenshots/history.png)`
-- About Screen: `![About](./screenshots/about.png)`
+### History Screen
+![History Screen](screenshots/history.png)
+
+### About Screen
+![About Screen](screenshots/about.png)
 
 ## How to Run the App
 
