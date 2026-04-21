@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StudySync - Know Your Study Environment</title>
+    <style>
+      :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --primary-light: #8b5cf6;
+        --surface: #f5f5ff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --white: #ffffff;
+        --border: rgba(99, 102, 241, 0.18);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--text);
+        background: linear-gradient(180deg, #fcfcff 0%, #f4f3ff 100%);
+        line-height: 1.6;
+      }
+
+      .container {
+        width: min(1100px, 92%);
+        margin: 0 auto;
+      }
+
+      .hero {
+        padding: 96px 0 76px;
+        background: radial-gradient(
+            circle at top right,
+            rgba(139, 92, 246, 0.22),
+            transparent 40%
+          ),
+          linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: var(--white);
+      }
+
+      .hero-inner {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 34px;
+        align-items: center;
+      }
+
+      h1 {
+        font-size: clamp(2.3rem, 5vw, 3.4rem);
+        line-height: 1.12;
+        margin: 0 0 10px;
+      }
+
+      .tagline {
+        font-size: clamp(1.05rem, 2.3vw, 1.35rem);
+        opacity: 0.95;
+        margin: 0 0 24px;
+      }
+
+      .cta {
+        display: inline-block;
+        text-decoration: none;
+        background: var(--white);
+        color: var(--primary-dark);
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 12px 22px;
+        box-shadow: 0 10px 28px rgba(28, 20, 84, 0.25);
+      }
+
+      .hero-card {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(8px);
+        border-radius: 20px;
+        padding: 22px;
+      }
+
+      .hero-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      .metric {
+        background: rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        padding: 12px;
+        text-align: center;
+        font-size: 0.9rem;
+      }
+
+      section {
+        padding: 72px 0;
+      }
+
+      h2 {
+        text-align: center;
+        font-size: clamp(1.7rem, 3.3vw, 2.2rem);
+        margin: 0 0 12px;
+      }
+
+      .section-intro {
+        text-align: center;
+        color: var(--muted);
+        max-width: 700px;
+        margin: 0 auto 34px;
+      }
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 12px 28px rgba(79, 70, 229, 0.08);
+      }
+
+      .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        color: var(--white);
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        margin-bottom: 12px;
+        font-weight: 700;
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .screenshots {
+        background: linear-gradient(180deg, rgba(99, 102, 241, 0.06), transparent);
+      }
+
+      .shot {
+        aspect-ratio: 9 / 16;
+        border-radius: 18px;
+        border: 1px dashed rgba(99, 102, 241, 0.4);
+        background: linear-gradient(150deg, #ecebff, #f8f8ff);
+        display: grid;
+        place-items: center;
+        color: #4f46e5;
+        font-weight: 700;
+      }
+
+      .steps {
+        counter-reset: step;
+      }
+
+      .step {
+        position: relative;
+        padding-left: 62px;
+      }
+
+      .step::before {
+        counter-increment: step;
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        color: var(--white);
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary-light));
+      }
+
+      footer {
+        background: #1f1b4b;
+        color: #dedcff;
+        padding: 26px 0;
+      }
+
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 900px) {
+        .hero-inner {
+          grid-template-columns: 1fr;
+        }
+
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          padding-top: 76px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container hero-inner">
+        <div>
+          <h1>StudySync</h1>
+          <p class="tagline">Know Your Study Environment</p>
+          <a class="cta" href="#features">Explore Features</a>
+        </div>
+        <div class="hero-card">
+          <strong>Smart study insights in one glance</strong>
+          <p style="margin: 10px 0 0; opacity: 0.92">
+            Detect room light, fetch current weather, and receive practical
+            guidance to improve focus.
+          </p>
+          <div class="hero-metrics">
+            <div class="metric">Light Status</div>
+            <div class="metric">Live Weather</div>
+            <div class="metric">Advice</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="features">
+      <div class="container">
+        <h2>Features</h2>
+        <p class="section-intro">
+          StudySync combines environmental sensing and smart recommendations to
+          support better daily study habits.
+        </p>
+        <div class="grid-3">
+          <article class="card">
+            <div class="icon">L</div>
+            <h3>Light Detection</h3>
+            <p>
+              Measures ambient lighting and clearly labels your room as bright,
+              moderate, or dim.
+            </p>
+          </article>
+          <article class="card">
+            <div class="icon">W</div>
+            <h3>Real-time Weather</h3>
+            <p>
+              Pulls current weather conditions to give context for your study
+              setup and planning.
+            </p>
+          </article>
+          <article class="card">
+            <div class="icon">A</div>
+            <h3>Study Advice</h3>
+            <p>
+              Delivers concise recommendations so you can quickly optimize your
+              environment.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="screenshots">
+      <div class="container">
+        <h2>Screenshots</h2>
+        <p class="section-intro">
+          Preview app screens here. Replace placeholders with real captures when
+          ready.
+        </p>
+        <div class="grid-3">
+          <div class="shot">Home Screen</div>
+          <div class="shot">History Screen</div>
+          <div class="shot">About Screen</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <h2>How It Works</h2>
+        <p class="section-intro">
+          Getting started takes just a few moments.
+        </p>
+        <div class="grid-3 steps">
+          <article class="card step">
+            <h3>Open StudySync</h3>
+            <p>
+              Launch the app and allow access to sensors for light estimation.
+            </p>
+          </article>
+          <article class="card step">
+            <h3>Check Live Environment</h3>
+            <p>
+              Review current light and weather readings collected in real time.
+            </p>
+          </article>
+          <article class="card step">
+            <h3>Apply Suggestions</h3>
+            <p>
+              Follow smart study advice and optionally save snapshots in your
+              history.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container footer-inner">
+        <span>Yunrui Lin</span>
+        <span>UCL CASA0015</span>
+      </div>
+    </footer>
+  </body>
+</html>
