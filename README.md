@@ -23,14 +23,9 @@ StudySync helps students determine if their environment is suitable for studying
 
 ## Screenshots
 
-### Home Screen
-![Home Screen](screenshots/home.png)
-
-### History Screen
-![History Screen](screenshots/history.png)
-
-### About Screen
-![About Screen](screenshots/about.png)
+| Home Screen | History Screen | About Screen |
+| --- | --- | --- |
+| <img src="screenshots/home.png" alt="Home Screen" width="300" /> | <img src="screenshots/history.png" alt="History Screen" width="300" /> | <img src="screenshots/about.png" alt="About Screen" width="300" /> |
 
 ## How to Run the App
 
