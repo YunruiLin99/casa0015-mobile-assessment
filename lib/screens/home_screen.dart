@@ -436,6 +436,65 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildHomeHeader(ThemeData theme, ColorScheme cs) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.28),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.auto_awesome_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'StudySync',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Your current study environment at a glance',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -444,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('StudySync'),
+        title: const Text('Home'),
         actions: [
           IconButton(
             tooltip: 'Refresh',
@@ -468,71 +527,93 @@ class _HomeScreenState extends State<HomeScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
+            _AnimatedCardEntry(
+              delayMs: 0,
+              child: _buildHomeHeader(theme, cs),
+            ),
+            const SizedBox(height: 14),
             if (_sensorError != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Material(
-                  color: cs.errorContainer,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline, color: cs.onErrorContainer),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            _sensorError!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: cs.onErrorContainer,
+              _AnimatedCardEntry(
+                delayMs: 80,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Material(
+                    color: cs.errorContainer,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline, color: cs.onErrorContainer),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              _sensorError!,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: cs.onErrorContainer,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            _InfoCard(
-              icon: Icons.wb_sunny_outlined,
-              title: 'Light',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _loading ? 'Reading...' : '$_lux lx',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+            _AnimatedCardEntry(
+              delayMs: 120,
+              child: _InfoCard(
+                icon: Icons.wb_sunny_outlined,
+                title: 'Light',
+                backgroundColor:
+                    classification.accent.withValues(alpha: 0.16),
+                borderColor: classification.accent.withValues(alpha: 0.42),
+                iconColor: classification.accent,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _loading ? 'Reading...' : '$_lux lx',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Status: ${classification.label}',
-                    style: theme.textTheme.titleMedium,
-                  ),
-                ],
+                    const SizedBox(height: 6),
+                    Text(
+                      'Status: ${classification.label}',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 14),
-            _InfoCard(
-              icon: Icons.cloud_outlined,
-              title: 'Weather',
-              child: _buildWeatherBody(theme, cs),
+            _AnimatedCardEntry(
+              delayMs: 200,
+              child: _InfoCard(
+                icon: Icons.cloud_outlined,
+                title: 'Weather',
+                child: _buildWeatherBody(theme, cs),
+              ),
             ),
             const SizedBox(height: 14),
-            _InfoCard(
-              icon: Icons.lightbulb_outline_rounded,
-              title: 'Study Advice',
-              backgroundColor: classification.accent.withValues(alpha: 0.12),
-              borderColor: classification.accent.withValues(alpha: 0.35),
-              child: Text(
-                classification.advice,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: cs.onSurface,
-                  height: 1.35,
+            _AnimatedCardEntry(
+              delayMs: 280,
+              child: _InfoCard(
+                icon: Icons.lightbulb_outline_rounded,
+                title: 'Study Advice',
+                backgroundColor: classification.accent.withValues(alpha: 0.12),
+                borderColor: classification.accent.withValues(alpha: 0.35),
+                iconColor: classification.accent,
+                child: Text(
+                  classification.advice,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: cs.onSurface,
+                    height: 1.35,
+                  ),
                 ),
               ),
             ),
@@ -550,6 +631,7 @@ class _InfoCard extends StatelessWidget {
     required this.child,
     this.backgroundColor,
     this.borderColor,
+    this.iconColor,
   });
 
   final IconData icon;
@@ -557,6 +639,7 @@ class _InfoCard extends StatelessWidget {
   final Widget child;
   final Color? backgroundColor;
   final Color? borderColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -578,7 +661,7 @@ class _InfoCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: cs.primary),
+                Icon(icon, color: iconColor ?? cs.primary),
                 const SizedBox(width: 10),
                 Text(
                   title,
@@ -592,6 +675,72 @@ class _InfoCard extends StatelessWidget {
             child,
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AnimatedCardEntry extends StatelessWidget {
+  const _AnimatedCardEntry({
+    required this.child,
+    required this.delayMs,
+  });
+
+  final Widget child;
+  final int delayMs;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DelayedReveal(
+      delayMs: delayMs,
+      child: child,
+    );
+  }
+}
+
+class _DelayedReveal extends StatefulWidget {
+  const _DelayedReveal({
+    required this.child,
+    required this.delayMs,
+  });
+
+  final Widget child;
+  final int delayMs;
+
+  @override
+  State<_DelayedReveal> createState() => _DelayedRevealState();
+}
+
+class _DelayedRevealState extends State<_DelayedReveal> {
+  bool _visible = false;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(Duration(milliseconds: widget.delayMs), () {
+      if (!mounted) return;
+      setState(() => _visible = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSlide(
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
+      offset: _visible ? Offset.zero : const Offset(0, 0.08),
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOut,
+        opacity: _visible ? 1 : 0,
+        child: widget.child,
       ),
     );
   }

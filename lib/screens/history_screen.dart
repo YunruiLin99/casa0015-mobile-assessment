@@ -61,6 +61,32 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return '${t.year}-${_pad2(t.month)}-${_pad2(t.day)} ${_pad2(t.hour)}:${_pad2(t.minute)}';
   }
 
+  IconData _statusIcon(String status) {
+    switch (status.toLowerCase()) {
+      case 'bright':
+        return Icons.wb_sunny_rounded;
+      case 'moderate':
+        return Icons.wb_twilight_rounded;
+      case 'dim':
+        return Icons.dark_mode_rounded;
+      default:
+        return Icons.light_mode_outlined;
+    }
+  }
+
+  Color _statusColor(ColorScheme cs, String status) {
+    switch (status.toLowerCase()) {
+      case 'bright':
+        return Colors.green.shade700;
+      case 'moderate':
+        return Colors.orange.shade700;
+      case 'dim':
+        return cs.error;
+      default:
+        return cs.primary;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -125,6 +151,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 horizontal: 18,
                                 vertical: 8,
                               ),
+                              leading: Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: _statusColor(
+                                    cs,
+                                    r.lightStatus,
+                                  ).withValues(alpha: 0.16),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  _statusIcon(r.lightStatus),
+                                  color: _statusColor(cs, r.lightStatus),
+                                ),
+                              ),
                               trailing: IconButton(
                                 tooltip: 'Delete',
                                 icon: Icon(
@@ -144,21 +185,58 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Light: ${r.lux} lx (${r.lightStatus})',
-                                      style: theme.textTheme.bodyMedium,
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.wb_sunny_outlined,
+                                          size: 16,
+                                          color: cs.primary,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            'Light: ${r.lux} lx (${r.lightStatus})',
+                                            style: theme.textTheme.bodyMedium,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: 2),
-                                    Text(
-                                      'Weather: ${r.weather}',
-                                      style: theme.textTheme.bodyMedium,
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.cloud_outlined,
+                                          size: 16,
+                                          color: cs.primary,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            'Weather: ${r.weather}',
+                                            style: theme.textTheme.bodyMedium,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: 2),
-                                    Text(
-                                      'Advice: ${r.suggestion}',
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        color: cs.onSurfaceVariant,
-                                      ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          Icons.lightbulb_outline_rounded,
+                                          size: 16,
+                                          color: cs.onSurfaceVariant,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            'Advice: ${r.suggestion}',
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              color: cs.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
