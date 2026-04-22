@@ -336,26 +336,30 @@ class _HomeScreenState extends State<HomeScreen> {
     return '${_weatherTempC!.toStringAsFixed(1)}°C, $_weatherDescription';
   }
 
-  ({String label, String advice, Color accent}) _classify(int lux) {
+  ({String label, String advice, Color accent, IconData adviceIcon}) _classify(
+    int lux,
+  ) {
     if (lux < 50) {
       return (
         label: 'Dim',
-        advice: 'The light is too dim. Turn on a lamp or move closer to a window to reduce eye strain.',
-        accent: AppColors.suggestionDark,
+        advice: 'Poor environment, not recommended',
+        accent: Colors.red.shade700,
+        adviceIcon: Icons.cancel_rounded,
       );
     }
     if (lux < 400) {
       return (
         label: 'Moderate',
-        advice: 'The light is comfortable. This environment is suitable for focused study.',
-        accent: AppColors.suggestionOk,
+        advice: 'Acceptable, consider improving lighting',
+        accent: Colors.orange.shade700,
+        adviceIcon: Icons.warning_amber_rounded,
       );
     }
     return (
       label: 'Bright',
-      advice:
-          'The room is bright. Watch out for screen glare and consider lowering your screen brightness.',
-      accent: AppColors.suggestionBright,
+      advice: 'Great environment for studying!',
+      accent: Colors.green.shade700,
+      adviceIcon: Icons.check_circle_rounded,
     );
   }
 
@@ -608,12 +612,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: classification.accent.withValues(alpha: 0.12),
                 borderColor: classification.accent.withValues(alpha: 0.35),
                 iconColor: classification.accent,
-                child: Text(
-                  classification.advice,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: cs.onSurface,
-                    height: 1.35,
-                  ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      classification.adviceIcon,
+                      color: classification.accent,
+                      size: 22,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        classification.advice,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: classification.accent,
+                          height: 1.35,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
