@@ -160,14 +160,111 @@
       }
 
       .shot {
-        aspect-ratio: 9 / 16;
+        background: var(--white);
         border-radius: 18px;
-        border: 1px dashed rgba(99, 102, 241, 0.4);
+        border: 1px solid var(--border);
+        box-shadow: 0 12px 28px rgba(79, 70, 229, 0.08);
+        padding: 14px;
+      }
+
+      .shot img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 9 / 16;
+        object-fit: cover;
+        border-radius: 14px;
         background: linear-gradient(150deg, #ecebff, #f8f8ff);
-        display: grid;
-        place-items: center;
-        color: #4f46e5;
+        cursor: zoom-in;
+      }
+
+      .shot-title {
+        margin: 12px 4px 2px;
         font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(13, 12, 30, 0.78);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        z-index: 1000;
+      }
+
+      .lightbox.is-open {
+        display: flex;
+      }
+
+      .lightbox-content {
+        position: relative;
+        width: min(420px, 92vw);
+        animation: lightboxFadeIn 220ms ease-out;
+      }
+
+      .lightbox img {
+        width: 100%;
+        max-height: 88vh;
+        object-fit: contain;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+        background: #ffffff;
+        opacity: 1;
+        transition: opacity 180ms ease;
+      }
+
+      .lightbox-close {
+        position: absolute;
+        top: -12px;
+        right: -12px;
+        width: 34px;
+        height: 34px;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        color: #1f1b4b;
+        font-size: 1.25rem;
+        line-height: 1;
+        background: #ffffff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+      }
+
+      .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.92);
+        color: #1f1b4b;
+        font-size: 1.2rem;
+        font-weight: 700;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+      }
+
+      .lightbox-prev {
+        left: -52px;
+      }
+
+      .lightbox-next {
+        right: -52px;
+      }
+
+      @keyframes lightboxFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
 
       .steps {
@@ -220,6 +317,14 @@
 
         .hero {
           padding-top: 76px;
+        }
+
+        .lightbox-prev {
+          left: -8px;
+        }
+
+        .lightbox-next {
+          right: -8px;
         }
       }
     </style>
@@ -287,13 +392,33 @@
       <div class="container">
         <h2>Screenshots</h2>
         <p class="section-intro">
-          Preview app screens here. Replace placeholders with real captures when
-          ready.
+          A quick look at the main screens in the StudySync app.
         </p>
         <div class="grid-3">
-          <div class="shot">Home Screen</div>
-          <div class="shot">History Screen</div>
-          <div class="shot">About Screen</div>
+          <figure class="shot">
+            <img
+              src="screenshots/home.png"
+              alt="StudySync Home Screen"
+              data-lightbox="Home Screen"
+            />
+            <figcaption class="shot-title">Home Screen</figcaption>
+          </figure>
+          <figure class="shot">
+            <img
+              src="screenshots/history.png"
+              alt="StudySync History Screen"
+              data-lightbox="History Screen"
+            />
+            <figcaption class="shot-title">History Screen</figcaption>
+          </figure>
+          <figure class="shot">
+            <img
+              src="screenshots/about.png"
+              alt="StudySync About Screen"
+              data-lightbox="About Screen"
+            />
+            <figcaption class="shot-title">About Screen</figcaption>
+          </figure>
         </div>
       </div>
     </section>
@@ -334,5 +459,108 @@
         <span>UCL CASA0015</span>
       </div>
     </footer>
+
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+      <div class="lightbox-content">
+        <button
+          class="lightbox-nav lightbox-prev"
+          id="lightboxPrev"
+          aria-label="Previous image"
+        >
+          ‹
+        </button>
+        <button
+          class="lightbox-nav lightbox-next"
+          id="lightboxNext"
+          aria-label="Next image"
+        >
+          ›
+        </button>
+        <button class="lightbox-close" id="lightboxClose" aria-label="Close">
+          x
+        </button>
+        <img id="lightboxImage" src="" alt="" />
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const lightbox = document.getElementById("lightbox");
+        const lightboxImage = document.getElementById("lightboxImage");
+        const closeButton = document.getElementById("lightboxClose");
+        const prevButton = document.getElementById("lightboxPrev");
+        const nextButton = document.getElementById("lightboxNext");
+        const thumbnails = Array.from(document.querySelectorAll("img[data-lightbox]"));
+        let currentIndex = -1;
+
+        function showImage(index) {
+          const normalized = (index + thumbnails.length) % thumbnails.length;
+          currentIndex = normalized;
+          const active = thumbnails[currentIndex];
+
+          lightboxImage.style.opacity = "0";
+          requestAnimationFrame(() => {
+            lightboxImage.src = active.src;
+            lightboxImage.alt =
+              active.alt || active.dataset.lightbox || "Screenshot";
+            lightboxImage.style.opacity = "1";
+          });
+        }
+
+        function openLightbox(index) {
+          if (!thumbnails.length) return;
+          showImage(index);
+          lightbox.classList.add("is-open");
+          lightbox.setAttribute("aria-hidden", "false");
+          document.body.style.overflow = "hidden";
+        }
+
+        function closeLightbox() {
+          lightbox.classList.remove("is-open");
+          lightbox.setAttribute("aria-hidden", "true");
+          lightboxImage.src = "";
+          lightboxImage.alt = "";
+          document.body.style.overflow = "";
+          currentIndex = -1;
+        }
+
+        function showNext() {
+          if (!lightbox.classList.contains("is-open") || !thumbnails.length) return;
+          showImage(currentIndex + 1);
+        }
+
+        function showPrev() {
+          if (!lightbox.classList.contains("is-open") || !thumbnails.length) return;
+          showImage(currentIndex - 1);
+        }
+
+        thumbnails.forEach((img, index) => {
+          img.addEventListener("click", () => {
+            openLightbox(index);
+          });
+        });
+
+        closeButton.addEventListener("click", closeLightbox);
+        nextButton.addEventListener("click", showNext);
+        prevButton.addEventListener("click", showPrev);
+
+        lightbox.addEventListener("click", (event) => {
+          if (event.target === lightbox) {
+            closeLightbox();
+          }
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (!lightbox.classList.contains("is-open")) return;
+          if (event.key === "Escape") {
+            closeLightbox();
+          } else if (event.key === "ArrowRight") {
+            showNext();
+          } else if (event.key === "ArrowLeft") {
+            showPrev();
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
