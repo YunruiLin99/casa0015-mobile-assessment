@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 import '../models/study_snapshot.dart';
 import '../services/history_storage.dart';
+import '../theme/app_colors.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({
@@ -61,6 +63,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return '${t.year}-${_pad2(t.month)}-${_pad2(t.day)} ${_pad2(t.hour)}:${_pad2(t.minute)}';
   }
 
+  String _formatShortTime(DateTime t) {
+    return '${_pad2(t.hour)}:${_pad2(t.minute)}';
+  }
+
   IconData _statusIcon(String status) {
     switch (status.toLowerCase()) {
       case 'bright':
@@ -85,6 +91,179 @@ class _HistoryScreenState extends State<HistoryScreen> {
       default:
         return cs.primary;
     }
+  }
+
+  Widget _buildLuxTrendChart(ThemeData theme, ColorScheme cs) {
+    if (_records.isEmpty) return const SizedBox.shrink();
+
+    final chartRecords = _records.reversed.toList();
+    final spots = <FlSpot>[];
+    for (var i = 0; i < chartRecords.length; i++) {
+      spots.add(FlSpot(i.toDouble(), chartRecords[i].lux.toDouble()));
+    }
+
+    final maxYData = chartRecords
+        .map((r) => r.lux.toDouble())
+        .reduce((a, b) => a > b ? a : b);
+    final maxY = (maxYData * 1.15).clamp(100, 2200).toDouble();
+    final minX = 0.0;
+    final maxX = (chartRecords.length - 1).toDouble();
+
+    String bottomLabel(double value) {
+      final index = value.round();
+      if (index < 0 || index >= chartRecords.length) return '';
+      return _formatShortTime(chartRecords[index].time);
+    }
+
+    final centerIndex =
+        chartRecords.length > 2 ? ((chartRecords.length - 1) / 2).round() : 0;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 6, 20, 12),
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+      decoration: BoxDecoration(
+        color: AppColors.cardLight,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.show_chart_rounded, color: cs.primary),
+              const SizedBox(width: 8),
+              Text(
+                'Light Trend',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 190,
+            child: LineChart(
+              LineChartData(
+                minX: minX,
+                maxX: maxX,
+                minY: 0,
+                maxY: maxY,
+                lineTouchData: LineTouchData(
+                  touchTooltipData: LineTouchTooltipData(
+                    tooltipRoundedRadius: 10,
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((spot) {
+                        final idx = spot.x.round();
+                        final rec = chartRecords[idx];
+                        return LineTooltipItem(
+                          '${_formatShortTime(rec.time)}\n${rec.lux} lx',
+                          theme.textTheme.bodySmall!.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ),
+                gridData: FlGridData(
+                  show: true,
+                  horizontalInterval: maxY <= 300 ? 50 : 100,
+                  getDrawingHorizontalLine: (value) => FlLine(
+                    color: cs.outlineVariant.withValues(alpha: 0.25),
+                    strokeWidth: 1,
+                  ),
+                  drawVerticalLine: false,
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: Border(
+                    left: BorderSide(
+                      color: cs.outlineVariant.withValues(alpha: 0.4),
+                    ),
+                    bottom: BorderSide(
+                      color: cs.outlineVariant.withValues(alpha: 0.4),
+                    ),
+                    right: BorderSide.none,
+                    top: BorderSide.none,
+                  ),
+                ),
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 38,
+                      interval: maxY <= 300 ? 50 : 100,
+                      getTitlesWidget: (value, meta) {
+                        if (value == 0) return const SizedBox.shrink();
+                        return Text(
+                          value.toInt().toString(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 26,
+                      getTitlesWidget: (value, meta) {
+                        final idx = value.round();
+                        final show = idx == 0 ||
+                            idx == centerIndex ||
+                            idx == chartRecords.length - 1;
+                        if (!show) return const SizedBox.shrink();
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            bottomLabel(value),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: true,
+                    barWidth: 3,
+                    color: AppColors.primary,
+                    isStrokeCapRound: true,
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                    ),
+                    dotData: FlDotData(
+                      show: chartRecords.length <= 12,
+                      getDotPainter: (_, __, ___, ____) => FlDotCirclePainter(
+                        radius: 3,
+                        color: AppColors.primary,
+                        strokeWidth: 1.5,
+                        strokeColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -117,6 +296,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               ),
             ),
           ),
+          if (!_loading && _records.isNotEmpty) _buildLuxTrendChart(theme, cs),
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
