@@ -1,46 +1,26 @@
-<!---
-
----
-title: "CASA0017: Web Architecture Final Assessment"
-author: "Steven Gray"
-date: "10 Dec 2021"
----
-
--->
-
 # Submission Guide
-
-You will need to edit this file, create a PDF using the instructions below, from this file.   Sign it digitally and upload to Moodle
-
-## How to create a PDF from Markdown
-When finished you should export to PDF using VSCode and MarkdownPDF Extension. Make sure you select no headers and no footers in the
-extension preferences before exporting to PDF.   
-
-Upload this PDF into Moodle for submission including a copy of your presentation slides.
 
 ## Link to GitHub Repository
 
-Flutter Application Name - MY APPLICATION NAME
-GitHub Repository - [https://github.com/ucl-casa-ce/casa0015-mobile-assessment](https://github.com/ucl-casa-ce/casa0015-mobile-assessment)
+Flutter Application Name - StudySync GitHub Repository - https://github.com/YunruiLin99/casa0015-mobile-assessment
 
 ## Introduction to Application
 
-A brief 200 word explanation of your application and it's use.  Below create a Bibliography to code, tutorial, or plugins you've used in the project. Use this guide
-for citation - [https://www.scribbr.co.uk/referencing/harvard-website-reference/](https://www.scribbr.co.uk/referencing/harvard-website-reference/)
+StudySync is a cross-platform Flutter mobile application designed to help university students evaluate whether their current environment is suitable for studying. The app combines two key data sources: real-time ambient light detection using the device camera, and live weather data fetched from the OpenWeatherMap REST API.
 
-## Biblography
+The camera plugin captures image frames and applies a brightness algorithm to estimate the environmental Lux value, classifying it as Bright, Moderate, or Dim. Combined with live temperature and weather conditions, the app generates colour-coded study advice — green for ideal conditions, orange for acceptable, and red for poor environments. Users can save their current environment status as a timestamped record, which is stored locally using SharedPreferences and visualised as a light trend chart on the History screen.
 
-1. Last name, First initial. (Year published). Title. Edition. (Only include the edition if it is not the first edition) City published: Publisher, Page(s). <http://google.com>
+The app contains three main screens: Home, History, and About, and was built entirely in Dart using the Flutter SDK, ensuring deployment across both iOS and Android devices.
 
-2. Last name, First initial. (Year published). Title. Edition. (Only include the edition if it is not the first edition) City published: Publisher, Page(s).  <http://google.com>
+## Bibliography
 
-----
+1. Flutter Team. (2024). Flutter Documentation. Google LLC. https://flutter.dev/docs
+2. OpenWeatherMap. (2024). Current Weather Data API. OpenWeatherMap. https://openweathermap.org/api
 
 ## Declaration of Authorship
 
-We, AUTHORS NAME HERE, confirm that the work presented in this assessment is my own. Where information has been derived from other sources, I confirm that this has been indicated in the work.
+We, Yunrui Lin, confirm that the work presented in this assessment is my own. Where information has been derived from other sources, I confirm that this has been indicated in the work.
 
+Digitally Sign with: Yunrui Lin
 
-Digitally Sign with Your name Here
-
-ASSESSMENT DATE
+ASSESSMENT DATE: 30 April 2026
